@@ -3,122 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Five Nights at Freddy's - מערכת אבטחה</title>
+    <title>FNAF - משחק הישרדות במשרד</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
-            background-color: #070709;
-            color: #e4e4e7;
+            background-color: #050507;
+            color: #f4f4f5;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
-            padding: 30px 15px;
+            padding: 20px;
         }
         h1 {
             color: #dc2626;
-            font-size: 2.8em;
-            letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(220, 38, 38, 0.8);
-            margin-bottom: 5px;
+            font-size: 2.3em;
+            text-shadow: 0 0 15px rgba(220, 38, 38, 0.8);
+            margin-bottom: 15px;
         }
-        .subtitle { color: #a1a1aa; margin-bottom: 25px; }
-        .monitor {
-            background: repeating-linear-gradient(0deg, #121215, #121215 2px, #18181b 2px, #18181b 4px);
-            border: 3px solid #3f3f46;
-            border-radius: 14px;
-            max-width: 750px;
-            margin: 0 auto;
-            padding: 25px;
-            box-shadow: 0 0 35px rgba(220, 38, 38, 0.25);
-        }
-        .top-bar {
+        .hud {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #27272a;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
+            max-width: 800px;
+            margin: 0 auto 15px;
+            background: #18181b;
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: 2px solid #3f3f46;
             font-family: monospace;
-            font-size: 1.1em;
+            font-size: 1.3em;
+            font-weight: bold;
         }
-        .rec { color: #ef4444; font-weight: bold; animation: blink 1.2s infinite; }
-        .battery { color: #22c55e; font-weight: bold; }
-        @keyframes blink { 50% { opacity: 0.2; } }
-        .screen {
-            background: #09090b;
-            border: 1px solid #27272a;
-            border-radius: 8px;
-            padding: 30px 20px;
-            min-height: 180px;
-            margin-bottom: 20px;
-        }
-        .screen h2 { color: #facc15; margin-bottom: 10px; font-size: 1.6em; }
-        .screen p { color: #d4d4d8; font-size: 1.15em; line-height: 1.6; }
-        .cam-buttons {
+        #clock { color: #facc15; }
+        #power { color: #22c55e; }
+        #usage { color: #38bdf8; }
+        .office {
             display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: stretch;
+            max-width: 800px;
+            height: 360px;
+            margin: 0 auto;
+            background: radial-gradient(circle, #1f1f23 0%, #09090b 100%);
+            border: 4px solid #27272a;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
         }
-        button {
-            background: #27272a;
-            color: #fff;
-            border: 2px solid #52525b;
-            padding: 12px 20px;
+        .side {
+            width: 32%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px;
+            background: #121215;
+            border-left: 2px solid #27272a;
+            border-right: 2px solid #27272a;
+        }
+        .doorway {
+            flex-grow: 1;
+            background: #000;
+            border: 3px solid #3f3f46;
             border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5em;
+            position: relative;
+            transition: background 0.15s;
+        }
+        .doorway.lit { background: #3f3f46; box-shadow: inset 0 0 30px #fef08a; }
+        .doorway.closed {
+            background: repeating-linear-gradient(0deg, #52525b, #52525b 15px, #27272a 15px, #27272a 30px);
+            border-color: #ef4444;
+        }
+        .controls { display: flex; gap: 8px; }
+        button {
+            flex: 1;
+            padding: 12px 5px;
             font-size: 1em;
             font-weight: bold;
+            border: none;
+            border-radius: 6px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.15s;
         }
-        button:hover, button.active {
+        .btn-door { background: #991b1b; color: white; }
+        .btn-door.active { background: #ef4444; box-shadow: 0 0 12px #ef4444; }
+        .btn-light { background: #854d0e; color: white; }
+        .btn-light.active { background: #eab308; color: black; box-shadow: 0 0 12px #eab308; }
+        .center-desk {
+            width: 36%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .fan { font-size: 3em; animation: spin 0.4s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        #status-msg { color: #a1a1aa; font-size: 1em; line-height: 1.5; }
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            padding: 20px;
+        }
+        #overlay h2 { font-size: 3em; margin-bottom: 15px; }
+        #overlay p { font-size: 1.3em; margin-bottom: 25px; color: #d4d4d8; max-width: 500px; }
+        .start-btn {
             background: #22c55e;
             color: #000;
-            border-color: #22c55e;
-            box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+            padding: 15px 40px;
+            font-size: 1.4em;
+            border-radius: 10px;
+            flex: none;
         }
+        .start-btn:hover { background: #16a34a; transform: scale(1.05); }
     </style>
 </head>
 <body>
 
     <h1>FIVE NIGHTS AT FREDDY'S</h1>
-    <div class="subtitle">מערכת מצלמות האבטחה של פיצריית פרדי פאזבר</div>
 
-    <div class="monitor">
-        <div class="top-bar">
-            <span class="rec">● REC LIVE</span>
-            <span id="cam-label" style="color:#fff;">CAM 01 - הבמה המרכזית</span>
-            <span class="battery">סוללה: 84% 🔋</span>
+    <div class="hud">
+        <span id="clock">12:00 AM</span>
+        <span id="usage">צריכה: ⚡</span>
+        <span id="power">סוללה: 100%</span>
+    </div>
+
+    <div class="office">
+        <div class="side">
+            <div class="doorway" id="right-doorway"></div>
+            <div class="controls">
+                <button class="btn-door" id="btn-right-door" onclick="toggleDoor('right')">דלת ימין</button>
+                <button class="btn-light" id="btn-right-light" onclick="toggleLight('right')">אור ימין</button>
+            </div>
         </div>
 
-        <div class="screen" id="cam-screen">
-            <h2>🎤 הבמה המרכזית (Show Stage)</h2>
-            <p>פרדי, בוני וצ'יקה עומדים על הבמה. כרגע הכול נראה שקט... אבל אל תוריד מהם את העיניים.</p>
+        <div class="center-desk">
+            <div class="fan">🌀</div>
+            <div id="status-msg">הדלק אורות כדי לבדוק את הדלתות.<br>סגור דלת רק כשיש סכנה!</div>
         </div>
 
-        <div class="cam-buttons">
-            <button class="active" onclick="switchCam(1, this)">CAM 01 - הבמה</button>
-            <button onclick="switchCam(2, this)">CAM 02 - מפרץ הפיראטים</button>
-            <button onclick="switchCam(3, this)">CAM 03 - המסדרון המערבי</button>
-            <button onclick="switchCam(4, this)">CAM 04 - המטבח (שמע בלבד)</button>
+        <div class="side">
+            <div class="doorway" id="left-doorway"></div>
+            <div class="controls">
+                <button class="btn-door" id="btn-left-door" onclick="toggleDoor('left')">דלת שמאל</button>
+                <button class="btn-light" id="btn-left-light" onclick="toggleLight('left')">אור שמאל</button>
+            </div>
         </div>
     </div>
 
-    <script>
-        const cams = {
-            1: { label: "CAM 01 - הבמה המרכזית", title: "🎤 הבמה המרכזית (Show Stage)", text: "פרדי, בוני וצ'יקה עומדים על הבמה. כרגע הכול נראה שקט... אבל אל תוריד מהם את העיניים." },
-            2: { label: "CAM 02 - מפרץ הפיראטים", title: "🏴‍☠️ מפרץ הפיראטים (Pirate Cove)", text: "הווילון הסגול סגור למחצה. פוקסי מציץ מבפנים — אם לא תבדוק אותו מספיק, הוא ירוץ למסדרון!" },
-            3: { label: "CAM 03 - המסדרון המערבי", title: "🔦 המסדרון המערבי (West Hall)", text: "אזהרה! זוהתה תנועה מהירה במסדרון לכיוון משרד האבטחה. התכונן לסגור את הדלת השמאלית!" },
-            4: { label: "CAM 04 - המטבח", title: "🍕 המטבח (Kitchen - Audio Only)", text: "המצלמה מושבתת. נשמעים רעשים של סירים ומחבתות... צ'יקה נמצאת בפנים." }
-        };
+    <div id="overlay">
+        <h2 id="end-title" style="color:#dc2626;">משמרת לילה - FNAF</h2>
+        <p id="end-desc">שרוד מ-12:00 עד 6:00 בבוקר! בדוק עם האורות אם בוני (שמאל) או צ'יקה (ימין) בדלת וסגור עליהם את הדלת בזמן.</p>
+        <button class="start-btn" onclick="startGame()">התחל משמרת</button>
+    </div>
 
-        function switchCam(num, btn) {
-            document.getElementById('cam-label').innerText = cams[num].label;
-            document.getElementById('cam-screen').innerHTML = `<h2>${cams[num].title}</h2><p>${cams[num].text}</p>`;
-            document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+    <script>
+        let power = 100, hour = 0, gameRunning = false;
+        let doors = { left: false, right: false };
+        let lights = { left: false, right: false };
+        let monsters = { left: false, right: false };
+        let monsterTimers = { left: 0, right: 0 };
+        let mainLoop, clockLoop, aiLoop;
+
+        function startGame() {
+            power = 100; hour = 0; gameRunning = true;
+            doors = { left: false, right: false };
+            lights = { left: false, right: false };
+            monsters = { left: false, right: false };
+            monsterTimers = { left: 0, right: 0 };
+            document.getElementById('overlay').style.display = 'none';
+            updateUI();
+
+            clearInterval(mainLoop); clearInterval(clockLoop); clearInterval(aiLoop);
+
+            mainLoop = setInterval(() => {
+                if (!gameRunning) return;
+                let drain = 0.35;
+                if (doors.left) drain += 0.65;
+                if (doors.right) drain += 0.65;
+                if (lights.left) drain += 0.45;
+                if (lights.right) drain += 0.45;
+                power = Math.max(0, power - drain);
+
+                ['left', 'right'].forEach(side => {
+                    if (monsters[side]) {
+                        if (doors[side]) {
+                            monsterTimers[side] += 0.5;
+                            if (monsterTimers[side] >= 3) {
+                                monsters[side] = false;
+                                monsterTimers[side] = 0;
+                            }
+                        } else {
+                            monsterTimers[side] += 0.5;
+                            if (monsterTimers[side] >= 4.5) {
+                                endGame(false, side === 'left' ? "🐰 בוני תפס אותך!" : "🐤 צ'יקה נכנסה למשרד!");
+                            }
+                        }
+                    }
+                });
+
+                if (power <= 0) {
+                    doors = { left: false, right: false };
+                    lights = { left: false, right: false };
+                    updateUI();
+                    setTimeout(() => { if (gameRunning) endGame(false, "🔋 נגמרה הסוללה! פרדי הגיע בחושך..."); }, 2000);
+                }
+                updateUI();
+            }, 500);
+
+            clockLoop = setInterval(() => {
+                if (!gameRunning) return;
+                hour++;
+                if (hour >= 6) endGame(true, "🎉 6:00 AM! שרדת את הלילה בהצלחה!");
+                updateUI();
+            }, 12000);
+
+            aiLoop = setInterval(() => {
+                if (!gameRunning) return;
+                if (!monsters.left && Math.random() < 0.35) { monsters.left = true; monsterTimers.left = 0; }
+                if (!monsters.right && Math.random() < 0.35) { monsters.right = true; monsterTimers.right = 0; }
+                updateUI();
+            }, 4000);
+        }
+
+        function toggleDoor(side) {
+            if (!gameRunning || power <= 0) return;
+            doors[side] = !doors[side];
+            updateUI();
+        }
+
+        function toggleLight(side) {
+            if (!gameRunning || power <= 0) return;
+            lights[side] = !lights[side];
+            if (lights[side]) lights[side === 'left' ? 'right' : 'left'] = false;
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('clock').innerText = (hour === 0 ? "12" : hour) + ":00 AM";
+            document.getElementById('power').innerText = "סוללה: " + Math.ceil(power) + "%";
+            let bolts = 1 + (doors.left?1:0) + (doors.right?1:0) + (lights.left?1:0) + (lights.right?1:0);
+            document.getElementById('usage').innerText = "צריכה: " + "⚡".repeat(bolts);
+
+            ['left', 'right'].forEach(side => {
+                const dw = document.getElementById(side + '-doorway');
+                const btnD = document.getElementById('btn-' + side + '-door');
+                const btnL = document.getElementById('btn-' + side + '-light');
+
+                dw.className = 'doorway' + (doors[side] ? ' closed' : (lights[side] ? ' lit' : ''));
+                btnD.className = 'btn-door' + (doors[side] ? ' active' : '');
+                btnL.className = 'btn-light' + (lights[side] ? ' active' : '');
+
+                if (!doors[side] && lights[side] && monsters[side]) {
+                    dw.innerText = side === 'left' ? '🐰👀' : '🐤👀';
+                } else {
+                    dw.innerText = doors[side] ? '🔒' : '';
+                }
+            });
+        }
+
+        function endGame(win, msg) {
+            gameRunning = false;
+            clearInterval(mainLoop); clearInterval(clockLoop); clearInterval(aiLoop);
+            const title = document.getElementById('end-title');
+            title.innerText = win ? "ניצחת! 6:00 AM" : "GAME OVER";
+            title.style.color = win ? "#22c55e" : "#dc2626";
+            document.getElementById('end-desc').innerText = msg;
+            document.getElementById('overlay').style.display = 'flex';
         }
     </script>
-
 </body>
 </html>
-
